@@ -11,25 +11,33 @@ class Ball:
         self.height = height
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.velocity_x = random.choice([-5, 5])
-        self.velocity_y = random.choice([-3, 3])
+        self.velocity_x = random.choice([-7, 7])
+        self.velocity_y = random.choice([-4, 4])
 
     def move(self):
         self.x += self.velocity_x
         self.y += self.velocity_y
 
+        # Wall bounce
         if self.y <= 0 or self.y + self.height >= self.screen_height:
             self.velocity_y *= -1
 
     def check_collision(self, player, ai):
-        if self.rect().colliderect(player.rect()) or self.rect().colliderect(ai.rect()):
+        ball_rect = self.rect()
+
+        if ball_rect.colliderect(player.rect()):
+            self.x = player.x + player.width  # move outside the paddle
+            self.velocity_x *= -1
+
+        elif ball_rect.colliderect(ai.rect()):
+            self.x = ai.x - self.width  # move outside the paddle
             self.velocity_x *= -1
 
     def reset(self):
         self.x = self.original_x
         self.y = self.original_y
         self.velocity_x *= -1
-        self.velocity_y = random.choice([-3, 3])
+        self.velocity_y = random.choice([-4, 4])
 
     def rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
